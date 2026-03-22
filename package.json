@@ -1,6 +1,6 @@
 {
   "name": "com.flying-gorilla-studios.ui-flight",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "displayName": "Flying Gorilla UI Flight",
   "description": "Launch pooled UI Images from screen, world, uGUI, or UI Toolkit anchors along a bezier path toward a target UI element.",
   "unity": "6000.2",

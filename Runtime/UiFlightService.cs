@@ -167,7 +167,14 @@ public sealed class UiFlightService : MonoBehaviour, IUiFlightService
         pooledImage.Image.sprite = request.Sprite;
         pooledImage.Image.color = request.Tint;
         pooledImage.Image.preserveAspect = true;
-        pooledImage.RectTransform.sizeDelta = request.ResolveSize();
+        Vector2 baseSize = request.ResolveBaseSize();
+        Vector2 resolvedSize = UiFlightMath.ResolveScaledSize(
+            baseSize,
+            request.SizeMode,
+            Screen.height,
+            request.ResolveReferenceScreenHeight()
+        );
+        pooledImage.RectTransform.sizeDelta = resolvedSize;
 
         if (!UiFlightAnchorUtility.TryResolveScreenPosition(request.From, out Vector2 startScreen))
         {
@@ -183,8 +190,6 @@ public sealed class UiFlightService : MonoBehaviour, IUiFlightService
         float duration = request.ResolveDuration();
         float elapsed = 0f;
         float spreadOffset = ResolveSpreadOffset(request.Profile, index, totalCount);
-        Vector2 size = request.ResolveSize();
-
         while (elapsed < duration)
         {
             if (cancellationToken.IsCancellationRequested)
@@ -229,7 +234,7 @@ public sealed class UiFlightService : MonoBehaviour, IUiFlightService
                 normalizedTime,
                 1f
             );
-            pooledImage.RectTransform.sizeDelta = size * scale;
+            pooledImage.RectTransform.sizeDelta = resolvedSize * scale;
 
             Color color = request.Tint;
             color.a *= UiFlightMath.EvaluateCurve(request.Profile?.AlphaCurve, normalizedTime, 1f);

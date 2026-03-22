@@ -8,6 +8,8 @@ using UnityEngine;
 
 public sealed class UiFlightRequest
 {
+    private const float DefaultReferenceScreenHeight = 1920f;
+
     public UiFlightAnchor From { get; set; }
 
     public UiFlightAnchor To { get; set; }
@@ -15,6 +17,10 @@ public sealed class UiFlightRequest
     public Sprite Sprite { get; set; }
 
     public Vector2 Size { get; set; }
+
+    public UiFlightSizeMode SizeMode { get; set; } = UiFlightSizeMode.ScreenHeightRatio;
+
+    public float ReferenceScreenHeight { get; set; } = DefaultReferenceScreenHeight;
 
     public int Count { get; set; } = 1;
 
@@ -42,7 +48,7 @@ public sealed class UiFlightRequest
         return Mathf.Max(0.01f, Duration);
     }
 
-    internal Vector2 ResolveSize()
+    internal Vector2 ResolveBaseSize()
     {
         if (Size.x > 0f && Size.y > 0f)
         {
@@ -55,5 +61,10 @@ public sealed class UiFlightRequest
         }
 
         return new Vector2(64f, 64f);
+    }
+
+    internal float ResolveReferenceScreenHeight()
+    {
+        return ReferenceScreenHeight > 0f ? ReferenceScreenHeight : DefaultReferenceScreenHeight;
     }
 }

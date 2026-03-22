@@ -39,4 +39,23 @@ public static class UiFlightMath
         float normalized = (index / (float)(count - 1)) - 0.5f;
         return normalized * spread;
     }
+
+    public static Vector2 ResolveScaledSize(
+        Vector2 baseSize,
+        UiFlightSizeMode sizeMode,
+        float currentScreenHeight,
+        float referenceScreenHeight
+    )
+    {
+        if (sizeMode == UiFlightSizeMode.RawPixels)
+        {
+            return baseSize;
+        }
+
+        float safeReferenceHeight = referenceScreenHeight > 0f ? referenceScreenHeight : 1920f;
+        float safeCurrentHeight =
+            currentScreenHeight > 0f ? currentScreenHeight : safeReferenceHeight;
+        float scale = safeCurrentHeight / safeReferenceHeight;
+        return baseSize * scale;
+    }
 }

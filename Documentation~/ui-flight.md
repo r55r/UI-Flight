@@ -8,7 +8,14 @@ UI Flight は、ゲーム固有の通貨や報酬 icon を package 外の Script
 
 - package 側には汎用ロジックのみを置く
 - sprite、色、同時発射数、profile はゲーム側の設定 asset で管理する
+- サイズは既定で `Screen.height / ReferenceScreenHeight` による比率補正を使い、同じ設定値でも端末縦サイズに対する見た目比率を揃える
 - package API をゲーム中へ直接散らさず、Presentation 層の adapter から呼び出す
+
+## サイズモード
+
+- 既定は `UiFlightSizeMode.ScreenHeightRatio`
+- `ReferenceScreenHeight` の既定値は `1920`
+- 従来どおり raw pixel を維持したい演出だけ `UiFlightSizeMode.RawPixels` を使う
 
 ## サポート対象
 

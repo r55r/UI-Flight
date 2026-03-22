@@ -37,4 +37,46 @@ public sealed class UiFlightMathTests
         Assert.That(middle, Is.EqualTo(0f).Within(0.001f));
         Assert.That(last, Is.EqualTo(15f).Within(0.001f));
     }
+
+    [Test]
+    public void ResolveScaledSize_ScreenHeightRatio_ScalesByHeightRatio()
+    {
+        Vector2 resolved = UiFlightMath.ResolveScaledSize(
+            new Vector2(64f, 80f),
+            UiFlightSizeMode.ScreenHeightRatio,
+            2532f,
+            1920f
+        );
+
+        Assert.That(resolved.x, Is.EqualTo(84.4f).Within(0.01f));
+        Assert.That(resolved.y, Is.EqualTo(105.5f).Within(0.01f));
+    }
+
+    [Test]
+    public void ResolveScaledSize_RawPixels_ReturnsBaseSize()
+    {
+        Vector2 resolved = UiFlightMath.ResolveScaledSize(
+            new Vector2(64f, 80f),
+            UiFlightSizeMode.RawPixels,
+            2532f,
+            1920f
+        );
+
+        Assert.That(resolved.x, Is.EqualTo(64f).Within(0.001f));
+        Assert.That(resolved.y, Is.EqualTo(80f).Within(0.001f));
+    }
+
+    [Test]
+    public void ResolveScaledSize_InvalidReferenceHeight_FallsBackTo1920()
+    {
+        Vector2 resolved = UiFlightMath.ResolveScaledSize(
+            new Vector2(64f, 80f),
+            UiFlightSizeMode.ScreenHeightRatio,
+            960f,
+            0f
+        );
+
+        Assert.That(resolved.x, Is.EqualTo(32f).Within(0.001f));
+        Assert.That(resolved.y, Is.EqualTo(40f).Within(0.001f));
+    }
 }
