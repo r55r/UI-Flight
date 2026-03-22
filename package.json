@@ -1,0 +1,38 @@
+{
+  "name": "com.flying-gorilla-studios.ui-flight",
+  "version": "0.1.0",
+  "displayName": "Flying Gorilla UI Flight",
+  "description": "Launch pooled UI Images from screen, world, uGUI, or UI Toolkit anchors along a bezier path toward a target UI element.",
+  "unity": "6000.2",
+  "license": "MIT",
+  "keywords": [
+    "ui",
+    "ugui",
+    "ui-toolkit",
+    "animation",
+    "bezier"
+  ],
+  "author": {
+    "name": "Flying Gorilla Studios"
+  },
+  "dependencies": {
+    "com.unity.ugui": "2.0.0"
+  },
+  "samples": [
+    {
+      "displayName": "UGUI To UGUI",
+      "description": "Minimal example that flies a sprite from a source Image to a target Image.",
+      "path": "Samples~/UGUI To UGUI"
+    },
+    {
+      "displayName": "UGUI To UI Toolkit",
+      "description": "Example that resolves a UI Toolkit VisualElement target from a UIDocument.",
+      "path": "Samples~/UGUI To UI Toolkit"
+    },
+    {
+      "displayName": "World To UI Toolkit",
+      "description": "Example that launches a sprite from a world position toward a UI Toolkit target.",
+      "path": "Samples~/World To UI Toolkit"
+    }
+  ]
+}
