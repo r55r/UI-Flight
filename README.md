@@ -21,6 +21,10 @@ var request = new UiFlightRequest
     Duration = 0.7f,
     SpawnInterval = 0.04f,
     Profile = bananaProfile,
+    OnItemCompleted = (completedCount, totalCount) =>
+    {
+        Debug.Log($"Arrived {completedCount}/{totalCount}");
+    },
 };
 
 UiFlight.Play(request);
@@ -43,5 +47,5 @@ UiFlight.Play(request);
 
 ## 制約
 
-- v0.1.0 は sprite 指定方式です。`VisualElement` の見た目そのものを自動キャプチャして複製する機能は含みません。
+- v0.2.0 も sprite 指定方式です。`VisualElement` の見た目そのものを自動キャプチャして複製する機能は含みません。
 - overlay 描画は `Screen Space - Overlay` の専用 `Canvas` に固定しています。

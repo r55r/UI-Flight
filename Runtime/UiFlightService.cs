@@ -113,6 +113,7 @@ public sealed class UiFlightService : MonoBehaviour, IUiFlightService
         void CompleteOne()
         {
             completedCount++;
+            request.OnItemCompleted?.Invoke(completedCount, totalCount);
             if (completedCount < totalCount || completionSource.Task.IsCompleted)
             {
                 return;

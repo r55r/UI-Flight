@@ -28,6 +28,8 @@ public sealed class UiFlightRequest
 
     public UiFlightBezierProfile Profile { get; set; }
 
+    public Action<int, int> OnItemCompleted { get; set; }
+
     public Action OnCompleted { get; set; }
 
     internal int ResolveCount()

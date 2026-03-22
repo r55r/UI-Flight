@@ -4,7 +4,9 @@
   "references": [
     "FlyingGorilla.UiFlight"
   ],
-  "optionalUnityReferences": [],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ],
   "includePlatforms": [],
   "excludePlatforms": [],
   "allowUnsafeCode": false,
