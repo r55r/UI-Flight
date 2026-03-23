@@ -9,6 +9,7 @@
 - ベジェ軌道、進行カーブ、スケール、フェードを `UiFlightBezierProfile` で調整できます。
 - サイズは既定で `Screen.height / 1920` の比率で補正され、端末が変わっても縦画面に対する見た目比率を揃えられます。
 - package 単体で完結しており、ゲーム側は sprite や profile、演出条件だけを渡せます。
+- `Runtime/link.xml` を同梱しているため、FG 側が reflection bridge で呼ぶ構成でも IL2CPP build で API が strip されません。
 
 ## クイックスタート
 
@@ -54,3 +55,4 @@ UiFlight.Play(request);
 - v0.2.0 も sprite 指定方式です。`VisualElement` の見た目そのものを自動キャプチャして複製する機能は含みません。
 - overlay 描画は `Screen Space - Overlay` の専用 `Canvas` に固定しています。
 - `UiFlightRequest.SizeMode = UiFlightSizeMode.RawPixels` を指定すると、従来どおり端末補正なしの raw pixel サイズで描画できます。
+- reflection bridge で package API を呼ぶ場合でも、同梱の `link.xml` を削除しないでください。

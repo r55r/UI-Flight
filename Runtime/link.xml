@@ -1,0 +1,15 @@
+<linker>
+  <assembly fullname="FlyingGorilla.UiFlight">
+    <type fullname="IUiFlightService" preserve="all" />
+    <type fullname="UiFlight" preserve="all" />
+    <type fullname="UiFlightAnchor" preserve="all" />
+    <type fullname="UiFlightAnchorKind" preserve="all" />
+    <type fullname="UiFlightAnchorUtility" preserve="all" />
+    <type fullname="UiFlightBezierProfile" preserve="all" />
+    <type fullname="UiFlightMath" preserve="all" />
+    <type fullname="UiFlightOverlayRoot" preserve="all" />
+    <type fullname="UiFlightRequest" preserve="all" />
+    <type fullname="UiFlightService" preserve="all" />
+    <type fullname="UiFlightSizeMode" preserve="all" />
+  </assembly>
+</linker>
