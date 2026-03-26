@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.4.0] - 2026-03-27
+
+- `UiFlight.Warmup(sprite, sizeDelta)` を追加し、既定 service / overlay root / pooled image 1 個を gameplay 前に事前初期化できるようにした。
+- `UiFlightService.GetOrCreateDefaultService()`、`EnsureInitialized()`、`AcquireImage()`、`UiFlightOverlayRoot.GetOrCreate()` に `ProfilerMarker` を追加し、初回 banana flight の cold start を package 内でも切り分けやすくした。
+
 ## [0.3.1] - 2026-03-23
 
 - `Runtime/link.xml` を追加し、FG 側が `UiFlightBridge` から reflection で呼ぶ API を IL2CPP build でも strip しないよう修正。

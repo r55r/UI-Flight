@@ -3,33 +3,41 @@
  * runtime service から pooled Image をぶら下げる親として使い、シーン差分を吸収する。
  */
 
+using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.UI;
 
 public sealed class UiFlightOverlayRoot : MonoBehaviour
 {
+    private static readonly ProfilerMarker GetOrCreateMarker = new(
+        "FG.UiFlight.OverlayRoot.GetOrCreate"
+    );
+
     public RectTransform RootRect { get; private set; }
 
     public static UiFlightOverlayRoot GetOrCreate(Transform parent)
     {
-        UiFlightOverlayRoot existing = parent.GetComponentInChildren<UiFlightOverlayRoot>(true);
-        if (existing != null)
+        using (GetOrCreateMarker.Auto())
         {
-            existing.EnsureInitialized();
-            return existing;
+            UiFlightOverlayRoot existing = parent.GetComponentInChildren<UiFlightOverlayRoot>(true);
+            if (existing != null)
+            {
+                existing.EnsureInitialized();
+                return existing;
+            }
+
+            var gameObject = new GameObject(
+                "UiFlightOverlayRoot",
+                typeof(RectTransform),
+                typeof(Canvas),
+                typeof(UiFlightOverlayRoot)
+            );
+
+            gameObject.transform.SetParent(parent, false);
+            var overlayRoot = gameObject.GetComponent<UiFlightOverlayRoot>();
+            overlayRoot.EnsureInitialized();
+            return overlayRoot;
         }
-
-        var gameObject = new GameObject(
-            "UiFlightOverlayRoot",
-            typeof(RectTransform),
-            typeof(Canvas),
-            typeof(UiFlightOverlayRoot)
-        );
-
-        gameObject.transform.SetParent(parent, false);
-        var overlayRoot = gameObject.GetComponent<UiFlightOverlayRoot>();
-        overlayRoot.EnsureInitialized();
-        return overlayRoot;
     }
 
     private void Awake()

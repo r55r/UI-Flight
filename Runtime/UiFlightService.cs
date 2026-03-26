@@ -7,12 +7,21 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.UI;
 
 public sealed class UiFlightService : MonoBehaviour, IUiFlightService
 {
     private const string DefaultServiceObjectName = "UiFlightService";
+    private static readonly ProfilerMarker GetOrCreateDefaultServiceMarker = new(
+        "FG.UiFlight.GetOrCreateDefaultService"
+    );
+    private static readonly ProfilerMarker EnsureInitializedMarker = new(
+        "FG.UiFlight.EnsureInitialized"
+    );
+    private static readonly ProfilerMarker AcquireImageMarker = new("FG.UiFlight.AcquireImage");
+    private static readonly ProfilerMarker WarmupMarker = new("FG.UiFlight.Warmup");
 
     private static UiFlightService defaultService;
 
@@ -21,23 +30,26 @@ public sealed class UiFlightService : MonoBehaviour, IUiFlightService
 
     public static UiFlightService GetOrCreateDefaultService()
     {
-        if (defaultService != null)
+        using (GetOrCreateDefaultServiceMarker.Auto())
         {
-            return defaultService;
-        }
+            if (defaultService != null)
+            {
+                return defaultService;
+            }
 
-        defaultService = Object.FindAnyObjectByType<UiFlightService>();
-        if (defaultService != null)
-        {
+            defaultService = Object.FindAnyObjectByType<UiFlightService>();
+            if (defaultService != null)
+            {
+                defaultService.EnsureInitialized();
+                return defaultService;
+            }
+
+            var gameObject = new GameObject(DefaultServiceObjectName, typeof(UiFlightService));
+            DontDestroyOnLoad(gameObject);
+            defaultService = gameObject.GetComponent<UiFlightService>();
             defaultService.EnsureInitialized();
             return defaultService;
         }
-
-        var gameObject = new GameObject(DefaultServiceObjectName, typeof(UiFlightService));
-        DontDestroyOnLoad(gameObject);
-        defaultService = gameObject.GetComponent<UiFlightService>();
-        defaultService.EnsureInitialized();
-        return defaultService;
     }
 
     public void Play(UiFlightRequest request)
@@ -82,7 +94,26 @@ public sealed class UiFlightService : MonoBehaviour, IUiFlightService
 
     private void EnsureInitialized()
     {
-        overlayRoot ??= UiFlightOverlayRoot.GetOrCreate(transform);
+        using (EnsureInitializedMarker.Auto())
+        {
+            overlayRoot ??= UiFlightOverlayRoot.GetOrCreate(transform);
+        }
+    }
+
+    internal void Warmup(Sprite sprite, Vector2 sizeDelta)
+    {
+        using (WarmupMarker.Auto())
+        {
+            EnsureInitialized();
+
+            // Gameplay 中の初回生成を避けるため、overlay と pooled image を遷移下で先に起こす。
+            PooledImage pooledImage = AcquireImage();
+            pooledImage.Image.sprite = sprite;
+            pooledImage.Image.preserveAspect = true;
+            pooledImage.RectTransform.sizeDelta = sizeDelta;
+            Canvas.ForceUpdateCanvases();
+            ReleaseImage(pooledImage);
+        }
     }
 
     private static bool TryValidateRequest(UiFlightRequest request)
@@ -286,35 +317,38 @@ public sealed class UiFlightService : MonoBehaviour, IUiFlightService
 
     private PooledImage AcquireImage()
     {
-        for (int index = 0; index < pooledImages.Count; index++)
+        using (AcquireImageMarker.Auto())
         {
-            if (!pooledImages[index].GameObject.activeSelf)
+            for (int index = 0; index < pooledImages.Count; index++)
             {
-                pooledImages[index].GameObject.SetActive(true);
-                return pooledImages[index];
+                if (!pooledImages[index].GameObject.activeSelf)
+                {
+                    pooledImages[index].GameObject.SetActive(true);
+                    return pooledImages[index];
+                }
             }
+
+            var gameObject = new GameObject(
+                $"UiFlightImage_{pooledImages.Count}",
+                typeof(RectTransform),
+                typeof(Image)
+            );
+
+            gameObject.transform.SetParent(overlayRoot.RootRect, false);
+
+            var rectTransform = gameObject.GetComponent<RectTransform>();
+            rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+            rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+            rectTransform.pivot = new Vector2(0.5f, 0.5f);
+
+            var pooledImage = new PooledImage(
+                gameObject,
+                rectTransform,
+                gameObject.GetComponent<Image>()
+            );
+            pooledImages.Add(pooledImage);
+            return pooledImage;
         }
-
-        var gameObject = new GameObject(
-            $"UiFlightImage_{pooledImages.Count}",
-            typeof(RectTransform),
-            typeof(Image)
-        );
-
-        gameObject.transform.SetParent(overlayRoot.RootRect, false);
-
-        var rectTransform = gameObject.GetComponent<RectTransform>();
-        rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
-        rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
-        rectTransform.pivot = new Vector2(0.5f, 0.5f);
-
-        var pooledImage = new PooledImage(
-            gameObject,
-            rectTransform,
-            gameObject.GetComponent<Image>()
-        );
-        pooledImages.Add(pooledImage);
-        return pooledImage;
     }
 
     private static void ReleaseImage(PooledImage pooledImage)

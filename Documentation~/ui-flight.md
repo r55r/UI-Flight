@@ -11,6 +11,8 @@ UI Flight は、ゲーム固有の通貨や報酬 icon を package 外の Script
 - サイズは既定で `Screen.height / ReferenceScreenHeight` による比率補正を使い、同じ設定値でも端末縦サイズに対する見た目比率を揃える
 - package API をゲーム中へ直接散らさず、Presentation 層の adapter から呼び出す
 - FG 本体のように reflection bridge で呼ぶ場合は、package 同梱の `Runtime/link.xml` で IL2CPP stripping を抑止する
+- 初回演出の cold start を gameplay 中から外したい場合は、遷移や loading 中に `UiFlight.Warmup(sprite, sizeDelta)` を呼んで既定 service / overlay / pooled image を先に起こす
+- profiler 切り分けでは `FG.UiFlight.GetOrCreateDefaultService`、`FG.UiFlight.EnsureInitialized`、`FG.UiFlight.AcquireImage`、`FG.UiFlight.OverlayRoot.GetOrCreate` を見ると package 内初回コストを追いやすい
 
 ## サイズモード
 

@@ -5,6 +5,7 @@
 
 using System.Threading;
 using System.Threading.Tasks;
+using UnityEngine;
 
 public static class UiFlight
 {
@@ -21,5 +22,10 @@ public static class UiFlight
     )
     {
         return DefaultService.PlayAsync(request, cancellationToken);
+    }
+
+    public static void Warmup(Sprite sprite, Vector2 sizeDelta)
+    {
+        UiFlightService.GetOrCreateDefaultService().Warmup(sprite, sizeDelta);
     }
 }

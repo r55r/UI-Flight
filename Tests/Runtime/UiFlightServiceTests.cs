@@ -8,9 +8,40 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
+using UnityEngine.UI;
 
 public sealed class UiFlightServiceTests
 {
+    [UnityTest]
+    public IEnumerator Warmup_CreatesOverlayRootAndInactivePooledImage()
+    {
+        Sprite sprite = CreateTestSprite();
+        UiFlightService service = null;
+
+        try
+        {
+            UiFlight.Warmup(sprite, new Vector2(24f, 24f));
+            service = UiFlightService.GetOrCreateDefaultService();
+
+            UiFlightOverlayRoot overlayRoot = service.GetComponentInChildren<UiFlightOverlayRoot>(
+                true
+            );
+            Assert.That(overlayRoot, Is.Not.Null);
+
+            Image[] pooledImages = overlayRoot.GetComponentsInChildren<Image>(true);
+            Assert.That(pooledImages, Has.Length.EqualTo(1));
+            Assert.That(pooledImages[0].gameObject.activeSelf, Is.False);
+            Assert.That(pooledImages[0].sprite, Is.SameAs(sprite));
+            Assert.That(pooledImages[0].rectTransform.sizeDelta, Is.EqualTo(new Vector2(24f, 24f)));
+        }
+        finally
+        {
+            Cleanup(service, sprite);
+        }
+
+        yield break;
+    }
+
     [UnityTest]
     public IEnumerator PlayAsync_InvokesOnItemCompletedForEachFlight()
     {

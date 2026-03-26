@@ -10,6 +10,7 @@
 - サイズは既定で `Screen.height / 1920` の比率で補正され、端末が変わっても縦画面に対する見た目比率を揃えられます。
 - package 単体で完結しており、ゲーム側は sprite や profile、演出条件だけを渡せます。
 - `Runtime/link.xml` を同梱しているため、FG 側が reflection bridge で呼ぶ構成でも IL2CPP build で API が strip されません。
+- `UiFlight.Warmup()` で既定 service、overlay root、pooled image 1 個を事前生成でき、初回 flight の cold start 切り分けと warmup に使えます。
 
 ## クイックスタート
 
@@ -32,6 +33,10 @@ var request = new UiFlightRequest
 };
 
 UiFlight.Play(request);
+```
+
+```csharp
+UiFlight.Warmup(bananaSprite, new Vector2(96f, 96f));
 ```
 
 ## API
